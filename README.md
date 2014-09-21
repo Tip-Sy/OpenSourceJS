@@ -2,8 +2,8 @@
 
 ### What is this repository for? ###
 
-* This repo contains JS functions that I origninally developped for my own needs
-* The idea is to share my work whenever I feel it may be useful to others
+* This repo contains JS functions that I originally developped for my own needs
+* The idea is to share my work whenever I feel it can be useful to others
 
 ### Description of the files ###
 
@@ -13,11 +13,11 @@
 
 * Each file is independent
 * Should you need one of them, pick it up
-* Test them with your favorite browser (nothing fancy here)
+* Test it with your favorite browser (nothing fancy here)
 
 ### Contribution guidelines ###
 
-* If you have any suggestion, please contribute! :)
+* If you have any suggestion, do not hesitate to contribute! :)
 
 .
 
