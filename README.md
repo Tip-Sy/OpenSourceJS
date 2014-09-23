@@ -7,8 +7,8 @@
 
 ### Description of the files ###
 
-* [ObjectUtilService](https://bitbucket.org/Tip-Sy/opensourcejs/src/6c5b310721dcafdbe89d37efb0a33dda6b5a8bc9/ObjectUtilService.js): Util for complex Object manipulations (such as *Merge* and *Difference* operations)
-* [SafariDate](https://bitbucket.org/Tip-Sy/opensourcejs/src/6c5b310721dcafdbe89d37efb0a33dda6b5a8bc9/SafariDate.js): Specific implementation of Date constructor for Safari (Version < 7) that doesn't support ISO string format as a parameter
+* [ObjectUtilService](ObjectUtilService.js): Util for complex Object manipulations (such as *Merge* and *Difference* operations)
+* [SafariDate](SafariDate.js): Specific implementation of Date constructor for Safari (Version < 7) that doesn't support ISO string format as a parameter
 
 ### How do I get set up? ###
 
