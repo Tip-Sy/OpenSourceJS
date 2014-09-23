@@ -13,7 +13,7 @@
 ### How do I get set up? ###
 
 * Each file is independent
-* Should you need one of them, pick it up
+* If you need one of them, just pick it up
 * Test it with your favorite browser (nothing fancy here)
 
 ### Contribution guidelines ###
