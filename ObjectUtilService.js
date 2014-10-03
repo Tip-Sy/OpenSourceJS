@@ -3,19 +3,17 @@
  * 
  * For non-Angular projects:
  *   The code inside 'objectUtilService' is Angular independant,
- *   thus can be used outside of an Angular project;
- *   just make sure to use 'jQuery' framework from 1.4,
- *   or rededefine the function '$.isEmptyObject'
+ *   thus can be used outside of an Angular project
  * 
  * Note:
  *   This code can be considered as an extension of Underscore library 
- *   in case of objects containing objects, for the following functions:
+ *   in case of complex objects, for the following functions:
  *   - Difference
  *   - Union (called 'Merge' here)
  * 
  * Prerequisite:
  * - Each Object is assumed to have an "id" field
- * - Must include "Underscore.js" library (for 'difference' and 'union' functions)
+ * - Must include "Underscore.js" library
  */
 var myModule = angular.module('myModule', []);
 myModule.factory('objectUtilService', function() {
@@ -139,7 +137,7 @@ myModule.factory('objectUtilService', function() {
                 var tmpResult = {};
                 differenceRec(o1[key][i], o2[key][j], tmpResult);
                 
-                if(!$.isEmptyObject(tmpResult)) {
+                if(!_.isEmpty(tmpResult)) {
                   tmpResult.id = o1[key][i].id;
                   result[key].push(tmpResult);
                 }
@@ -171,7 +169,7 @@ myModule.factory('objectUtilService', function() {
           var tmpResult = {};
           differenceRec(o1[key], o2[key], tmpResult);
           
-          if(!$.isEmptyObject(tmpResult)) {
+          if(!_.isEmpty(tmpResult)) {
             tmpResult.id = o1[key].id;
             result[key] = tmpResult;
           }
