@@ -30,7 +30,7 @@ var objectUtil = (function() {
    * @returns {int} comparisonResult
    */
   var compare = function(o1, o2) {
-    if(!o1[ID] || !o2[ID]) {
+    if(typeof o1[ID] === "undefined" || typeof o2[ID] === "undefined") {
       return 0;
     }
     return o1[ID] - o2[ID];
@@ -148,7 +148,7 @@ var objectUtil = (function() {
             differenceObject(o1[key], o2[key], tmpResult);
             
             if(!_.isEmpty(tmpResult)) {
-              if(o1[key][ID]) {
+              if(typeof o1[key][ID] !== 'undefined') {
                 tmpResult[ID] = o1[key][ID];
               }
               result[key] = tmpResult;
@@ -200,12 +200,10 @@ var objectUtil = (function() {
             var tmpResult = {};
             differenceObject(a1[i], a2[j], tmpResult);
             
-            if(!_.isEmpty(tmpResult)) {
-              tmpResult[ID] = a1[i][ID];
-              result.push(tmpResult);
-              
-            } else if(addIfEqual) {
-              tmpResult[ID] = a1[i][ID];
+            if(!_.isEmpty(tmpResult) || addIfEqual) {
+              if(typeof a1[i][ID] !== 'undefined') {
+                tmpResult[ID] = a1[i][ID];
+              }
               result.push(tmpResult);
             }
             
@@ -267,7 +265,7 @@ var objectUtil = (function() {
       
       if(_.isEmpty(result)) {
         result = null;
-      } else if(o1[ID]) {
+      } else if(typeof o1[ID] !== "undefined") {
         result[ID] = o1[ID];
       }
       
