@@ -8,7 +8,7 @@
  *   - Union (called 'Merge' here)
  * 
  * Prerequisite:
- * - Each Object is assumed to have a identifier attribute (such as "id")
+ * - Each Object is assumed to have an identifier attribute (such as 'id')
  * - Must include "Underscore.js" library
  */
 var objectUtil = (function() {
