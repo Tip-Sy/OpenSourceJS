@@ -2,13 +2,12 @@
  * Util for Object manipulation in JS
  * 
  * Note:
- *   This code can be considered as an extension of Underscore library 
+ *   This code can be considered as an extension of Underscore lib
  *   in case of complex objects, for the following functions:
  *   - Difference
  *   - Union (called 'Merge' here)
  * 
  * Prerequisite:
- * - Each Object is assumed to have an identifier attribute (such as 'id')
  * - Must include "Underscore.js" library
  */
 var objectUtil = (function() {
@@ -125,37 +124,43 @@ var objectUtil = (function() {
   var differenceObject = function(o1, o2, result) {
     if(o1 instanceof Object && o2 instanceof Object) {
       
-      // Compare each attribute of o1 with each one of o2
-      for(var key in o1) {
-        if(o1[key] instanceof Array && o2[key] instanceof Array) {
-          
-          // If the attribute is an array: get the differences between the two arrays
-          result[key] = [];
-          differenceArray(o1[key], o2[key], result[key], true);
-          
-          if(result[key].length === 0 && (o1[key].length === 0 || o2[key].length > 0)) {
+  	  // Compare objects only if their ID is equal (or both undefined)
+	    if(o1[ID] === o2[ID]) {
+  	    
+        // Compare each attribute of o1 with each one of o2
+        for(var key in o1) {
+          if(o1[key] instanceof Array && o2[key] instanceof Array) {
             
-            // If there are no differences between the arrays of o1 and 02, the empty result array is deleted
-            delete result[key];
+            // If the attribute is an array: get the differences between the two arrays
+            result[key] = [];
+            differenceArray(o1[key], o2[key], result[key], true);
+            
+            if(result[key].length === 0 && (o1[key].length === 0 || o2[key].length > 0)) {
+              
+              // If there are no differences between the arrays of o1 and 02, the empty result array is deleted
+              delete result[key];
+            }
+            
+          } else if(o1[key] instanceof Object) {
+            
+            // If the attribute is an object: call difference recursively
+            var tmpResult = {};
+            differenceObject(o1[key], o2[key], tmpResult);
+            
+            if(!_.isEmpty(tmpResult)) {
+              if(o1[key][ID]) {
+                tmpResult[ID] = o1[key][ID];
+              }
+              result[key] = tmpResult;
+            }
+            
+          } else if(o1[key] !== o2[key] && typeof o2[key] !== 'undefined') {
+            
+            // Finally, if the attribute values are different between the two objects, get o2 value
+            result[key] = o2[key];
           }
-          
-        } else if(o1[key] instanceof Object) {
-          
-          // If the attribute is an object: call difference recursively
-          var tmpResult = {};
-          differenceObject(o1[key], o2[key], tmpResult);
-          
-          if(tmpResult.length) {
-            tmpResult.id = o1[key].id;
-            result[key] = tmpResult;
-          }
-          
-        } else if(o1[key] !== o2[key] && typeof o2[key] !== 'undefined') {
-          
-          // Finally, if the attribute values are different between the two objects, get o2 value
-          result[key] = o2[key];
         }
-      }
+  	  }
     }
   };
   
@@ -195,12 +200,12 @@ var objectUtil = (function() {
             var tmpResult = {};
             differenceObject(a1[i], a2[j], tmpResult);
             
-            if(tmpResult.length) {
-              tmpResult.id = a1[i].id;
+            if(!_.isEmpty(tmpResult)) {
+              tmpResult[ID] = a1[i][ID];
               result.push(tmpResult);
               
             } else if(addIfEqual) {
-              tmpResult.id = a1[i].id;
+              tmpResult[ID] = a1[i][ID];
               result.push(tmpResult);
             }
             
@@ -258,14 +263,12 @@ var objectUtil = (function() {
       
       // Case of two objects
       result = {};
-      if(o1.id === o2.id) {
-        differenceObject(o1, o2, result);
-      }
+      differenceObject(o1, o2, result);
       
-      if(result.length) {
-        result.id = o1.id;
-      } else {
+      if(_.isEmpty(result)) {
         result = null;
+      } else if(o1[ID]) {
+        result[ID] = o1[ID];
       }
       
     } else if(o1 !== o2) {
@@ -274,8 +277,6 @@ var objectUtil = (function() {
       result = o2;
       
     } else {
-      
-      // Default case
       result = null;
     }
     
