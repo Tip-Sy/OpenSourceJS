@@ -160,7 +160,7 @@ var objectUtil = (function() {
             result[key] = o2[key];
           }
         }
-  	  }
+      }
     }
   };
   
