@@ -38,6 +38,26 @@ var objectUtil = (function() {
   
   
   /**
+  * Merge two objects by calling appropriate function mergeObject or mergeArray
+  * 
+  * @param {Object} o1
+  * @param {Object} o2
+  * @param {boolean} deleteIfMissing: merge mode => If true, delete Objects in Array of o1 that are missing in o2
+  */
+  var merge = function(o1, o2, deleteIfMissing) {
+    if(o1 instanceof Array || o2 instanceof Array) {
+      mergeArray(o1, o2, deleteIfMissing);
+      
+    } else if(o1 instanceof Object || o2 instanceof Object) {
+      mergeObject(o1, o2, deleteIfMissing);
+      
+    } else if(o1 !== o2 && typeof o2 !== 'undefined') {
+      o1 = o2;
+    }
+  };
+  
+  
+ /**
   * Merge two objects, following 3 rules:
   * - keep unchanged attributes
   * - override o1 attributes with the ones of o2
@@ -51,66 +71,78 @@ var objectUtil = (function() {
   * @param {Object} o2
   * @param {boolean} deleteIfMissing: merge mode => If true, delete Objects in Array of o1 that are missing in o2
   */
-  var merge = function(o1, o2, deleteIfMissing) {
-    if(o1 instanceof Object && o2 instanceof Object) {
-      
-      // Compare each attribute of o1 with each one of o2
-      for(var key in o1) {
-        if(o1[key] instanceof Array && o2[key] instanceof Array) {
-          
-          // If the attribute is an array: merge the two arrays
-          var length1 = o1[key].length;
-          var length2 = o2[key].length;
-          
-          if(deleteIfMissing === true && length2 === 0) {
-            o1[key] = [];
-          } else if((length1 > 0 && o1[key][0] instanceof Object) || (length2 > 0 && o2[key][0] instanceof Object)) {
+  mergeObject = function(o1, o2, deleteIfMissing) {
+    if(o2) {
+      if(o1 instanceof Object) {
+        for(var key in o1) {
+          if(o1[key] instanceof Array || o2[key] instanceof Array) {
+            // If the attribute is an array: merge the two arrays
+            mergeArray(o1[key], o2[key], deleteIfMissing);
             
-            // Special case of an array of objects
-            var i=0;
-            var j=0;
-            o1[key].sort(compare);
-            o2[key].sort(compare);
+          } else if(o1[key] instanceof Object) {
+            // If the attribute is an object: call mergeObject recursively
+            mergeObject(o1[key], o2[key], deleteIfMissing);
             
-            while(j < length2) {
-              if(i === length1 || compare(o1[key][i], o2[key][j]) > 0) {
-                o1[key].push(o2[key][j]);
-                j++;
-                
-              } else if(compare(o1[key][i], o2[key][j]) === 0) {
-                merge(o1[key][i], o2[key][j], deleteIfMissing);
-                i++;
-                j++;
-                
-              } else if(compare(o1[key][i], o2[key][j]) < 0) {
-                
-                if(deleteIfMissing === true) {
-                  o1[key].splice(i,1);
-                  length1--;
-                  
-                } else {
-                  i++;
-                }
-              }
-            }
-          } else {
-            o1[key] = _.union(o1[key], o2[key]);
+          } else if(o1[key] !== o2[key]) {
+            // Finally, if the attribute values are different between the two objects, override o1 value
+            o1[key] = o2[key];
           }
-        } else if(o1[key] instanceof Object) {
+        }
+      } else {
+        o1 = o2;
+      }
+    }
+  }
+  
+  
+  /**
+  * Merge two arrays, following one rule:
+  * - If deleteIfMissing mode is true: delete objects in a1 that are missing in a2
+  * - Else, keep every objects in a1, and simply add the new ones from a2
+  * 
+  * @param {Array} a1
+  * @param {Array} a2
+  * @param {boolean} deleteIfMissing: merge mode => If true, delete Objects in a1 that are missing in a2
+  */
+  mergeArray = function(a1, a2, deleteIfMissing) {
+    var length1 = (typeof a1 !== 'undefined' && a1.length) ? a1.length : 0;
+    var length2 = (typeof a2 !== 'undefined' && a2.length) ? a2.length : 0;
+    
+    if(deleteIfMissing === true && length2 === 0) {
+      a1 = [];
+    } else if((length1 > 0 && a1[0] instanceof Object) || (length2 > 0 && a2[0] instanceof Object)) {
+      // Special case of an array of objects (or multi-array)
+      var i=0;
+      var j=0;
+      a1.sort(compare);
+      a2.sort(compare);
+      
+      while(j < length2) {
+        if(i === length1 || compare(a1[i], a2[j]) > 0) {
+          a1.push(a2[j]);
+          j++;
           
-          // If the attribute is an object: call mergeObject recursively
-          merge(o1[key], o2[key], deleteIfMissing);
+        } else if(compare(a1[i], a2[j]) === 0) {
+          // Call merge recursively to handle multi-arrays and arrays of objects 
+          merge(a1[i], a2[j], deleteIfMissing);
+          i++;
+          j++;
           
-        } else if(o1[key] !== o2[key] && typeof o2[key] !== 'undefined') {
+        } else if(compare(a1[i], a2[j]) < 0) {
           
-          // Finally, if the attribute values are different between the two objects, override o1 value
-          o1[key] = o2[key];
+          if(deleteIfMissing === true) {
+            a1.splice(i,1);
+            length1--;
+            
+          } else {
+            i++;
+          }
         }
       }
-    } else if(o1 !== o2 && typeof o2 !== 'undefined') {
-      o1 = o2;
+    } else {
+      a1 = _.union(a1, a2);
     }
-  };
+  }
   
   
   /**
